@@ -18,14 +18,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired
     private AuthenticationProviderMock authenticationProviderMock;
 
-    private final String AUTHEN_HEADER = "Authorization";
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        final String fullToken = request.getHeader(this.AUTHEN_HEADER);
-        if (fullToken != null && fullToken.substring(0, 7).equals("Bearer ")) {
-            final String subToken = fullToken.substring(7);
+        final String tokenWithBearer = request.getHeader("Authorization");
+        if (tokenWithBearer != null && tokenWithBearer.startsWith("Bearer ")) {
+            final String token = tokenWithBearer.substring(7);
+            System.out.println("token: " + token);
 
             // extract user from token
 
@@ -41,12 +40,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             // optional: set request as details into request
 
             // set token into security holder's authentication
-
-            SecurityContextHolder.getContext()
-                    .setAuthentication(subToken.equals("test") ? authenticationProviderMock.getAuthentication()
-                            : authenticationProviderMock.getInvalidAuthentication());
+            final var authen = authenticationProviderMock.getAuthentication();
+            SecurityContextHolder.getContext().setAuthentication(authen);
+            System.out.println("isAuthen: " + authen.isAuthenticated());
+            System.out.println("authen was set");
         } else {
             SecurityContextHolder.clearContext();
+            System.out.println("context was clearer");
         }
         filterChain.doFilter(request, response);
     }
