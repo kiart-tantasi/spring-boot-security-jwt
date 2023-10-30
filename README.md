@@ -12,25 +12,19 @@ or with gradle
 ## Public endpoints
 
 ```
-curl http://localhost:8080/api/test
+curl http://localhost:8080/api/public
 ```
 
 ## Private endpoints
 
-```
-curl http://localhost:8080/api/secret
-```
-
-# How to access private endpoints
-
 Include Bearer Token Authorization header in request
-
-ADMIN authority
-```
-curl http://localhost:8080/api/secret -H 'authorization: Bearer any-token'
-```
 
 USER authority
 ```
-curl http://localhost:8080/api/secret -H 'authorization: Bearer ADMIN'
+curl http://localhost:8080/api/user -H 'authorization: Bearer USER'
+```
+
+ADMIN authority
+```
+curl http://localhost:8080/api/admin -H 'authorization: Bearer ADMIN'
 ```

@@ -22,7 +22,7 @@ public class SecurityConfiguration {
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        final var securedEndpoints = new String[] { "/api/admin", "/api/secret", "/api/user" };
+        final var securedEndpoints = new String[] { "/api/admin", "/api/user" };
         return http
                 // enable cors but disable csrf because we don't need csrf when we use jwt token
                 .cors().and().csrf().disable()
