@@ -12,13 +12,13 @@ or with gradle
 ## Public endpoints
 
 ```
-http://localhost:8080/api/test
+curl http://localhost:8080/api/test
 ```
 
 ## Private endpoints
 
 ```
-http://localhost:8080/api/secret
+curl http://localhost:8080/api/secret
 ```
 
 # How to access private endpoints
