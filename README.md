@@ -23,5 +23,14 @@ http://localhost:8080/api/secret
 
 # How to access private endpoints
 
-**It does not work now. I believe it is because of version change**
 Include Bearer Token Authorization header in request
+
+ADMIN authority
+```
+curl http://localhost:8080/api/secret -H 'authorization: Bearer any-token'
+```
+
+USER authority
+```
+curl http://localhost:8080/api/secret -H 'authorization: Bearer ADMIN'
+```

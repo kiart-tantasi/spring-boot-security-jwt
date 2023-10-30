@@ -20,12 +20,15 @@ public class SecurityConfiguration {
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                // enable cors but disable csrf because we don't need csrf when we use jwt token
                 .cors().and().csrf().disable()
                 .authorizeHttpRequests().requestMatchers("/api/test").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                // set username add password with custom logic before
+                // UsernamePasswordAuthenticationFilter tries to get username and password
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
