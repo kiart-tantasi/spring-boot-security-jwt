@@ -88,7 +88,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return true;
             }
         };
-
     }
 
     private Authentication getAuthenMock(boolean isAdmin) {

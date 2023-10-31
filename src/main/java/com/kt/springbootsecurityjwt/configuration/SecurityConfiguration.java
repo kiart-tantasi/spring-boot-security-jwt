@@ -13,8 +13,7 @@ import com.kt.springbootsecurityjwt.authentication.JwtTokenFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // prePostEnabled is true by default and securedEnabled and jsr250Enabled are
-                      // false by default
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Autowired
@@ -22,14 +21,13 @@ public class SecurityConfiguration {
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        final var securedEndpoints = new String[] { "/api/admin", "/api/user" };
+        final var publicEndpoints = new String[] { "/api/public", "/api/login" };
         return http
                 // enable cors but disable csrf because we don't need csrf when we use jwt token
                 .cors().and().csrf().disable()
-                .authorizeHttpRequests().requestMatchers(securedEndpoints).authenticated()
-                // bad practice. in prod, we should permit limited requests and authenticate any
-                // requests instead
-                .anyRequest().permitAll()
+                .authorizeHttpRequests().requestMatchers(publicEndpoints).permitAll()
+                // NOTE: this casues 403 to unknown routes instead of 404
+                .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -38,4 +36,5 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 }
