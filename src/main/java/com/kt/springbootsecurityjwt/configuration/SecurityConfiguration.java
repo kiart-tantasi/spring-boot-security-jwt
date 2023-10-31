@@ -31,8 +31,12 @@ public class SecurityConfiguration {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                // set username add password with custom logic before
-                // UsernamePasswordAuthenticationFilter tries to get username and password
+                // [why before UsernamePasswordAuthenticationFilter ?]
+                // ref: https://stackoverflow.com/a/70885651/21331113
+                // if you place your filter where the UsernamePasswordAuthenticationFilter would
+                // be, any possible exception thrown by your filter will not be seen by the
+                // ExceptionTranslatorFilter, instead it will go all the way back to the
+                // throwable() method of Tomcat's
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
