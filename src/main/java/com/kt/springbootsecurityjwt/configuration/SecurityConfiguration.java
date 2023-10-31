@@ -3,13 +3,16 @@ package com.kt.springbootsecurityjwt.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import com.kt.springbootsecurityjwt.authentication.JwtTokenFilter;
+
+import com.kt.springbootsecurityjwt.authentication.CustomAuthenticationManager;
+import com.kt.springbootsecurityjwt.authentication.CustomAuthenticationProvider;
 
 @Configuration
 @EnableWebSecurity
@@ -17,12 +20,15 @@ import com.kt.springbootsecurityjwt.authentication.JwtTokenFilter;
 public class SecurityConfiguration {
 
     @Autowired
-    private JwtTokenFilter jwtTokenFilter;
+    private CustomAuthenticationManager customAuthenticationManager;
 
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    protected SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManagerBuilder builder)
+            throws Exception {
         final var publicEndpoints = new String[] { "/api/public", "/api/login" };
+        builder.authenticationProvider(new CustomAuthenticationProvider());
         return http
+
                 // enable cors but disable csrf because we don't need csrf when we use jwt token
                 .cors().and().csrf().disable()
                 .authorizeHttpRequests().requestMatchers(publicEndpoints).permitAll()
@@ -31,10 +37,9 @@ public class SecurityConfiguration {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                // set username add password with custom logic before
-                // UsernamePasswordAuthenticationFilter tries to get username and password
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationManager(customAuthenticationManager)
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt()
+                        .authenticationManager(this.customAuthenticationManager))
                 .build();
     }
-
 }
